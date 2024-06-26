@@ -3,7 +3,8 @@
 `formRowRepeater` is a lightweight jQuery plugin that allows you to dynamically add, remove, and sort form rows with drag-and-drop functionality. This is ideal for forms that require repeating fields such as adding multiple employees, contacts, or any repetitive data entries.
 
 ## Screenshot
-![jquery-form-row-repeater-screenshot]
+![screenshot](https://github.com/nabeeljavaid/jquery-form-row-repeater/assets/2786954/90043798-2824-4668-92c5-23da94f0cae1)
+
 
 ## Features
 
