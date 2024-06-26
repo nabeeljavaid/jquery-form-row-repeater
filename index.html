@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repeatable Form Row with Drag-and-Drop Sorting</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        /* Custom styles specific to the form rows */
+        .form-row { 
+            margin-bottom: 10px; 
+            padding: 10px; /* Add padding for better spacing */
+            background-color: #f8f9fa; /* Light background color */
+            border: 1px solid #dee2e6; /* Border color */
+            border-radius: .25rem; /* Rounded corners */
+        }
+
+        .form-row input,
+        .form-row select { 
+            margin-right: 10px; 
+        }
+
+        .handle { 
+            cursor: move; 
+            margin-right: 10px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+    	<h1 class="mb-4">List of Employees</h1>
+        <form id="employees">
+            <!-- Template row with Bootstrap classes -->
+            <div class="row g-3 align-items-center mb-4 form-row template-row">
+                <div class="col-auto handle">
+                    <i class="fas fa-grip-vertical"></i>
+                </div>
+                <div class="col-auto">
+                    <input type="text" class="form-control" name="name[]" placeholder="Enter employee name">
+                </div>
+                <div class="col-auto">
+                    <select class="form-select" name="dept[]">
+                        <option value="">Select Department</option>
+                        <option value="IT">IT</option>
+                        <option value="Sales & Marketing">Sales & Marketing</option>
+                        <option value="HR">HR</option>
+                        <option value="Operations">Operations</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="perks[]" value="Salary" id="checkboxSalary">
+                        <label class="form-check-label" for="checkboxSalary">Salary</label>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="perks[]" value="Commission" id="checkboxCommission">
+                        <label class="form-check-label" for="checkboxCommission">Commission</label>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gender[]" value="radio1" id="radioMale">
+                        <label class="form-check-label" for="radioMale">Male</label>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="gender[]" value="radio2" id="radioFemale">
+                        <label class="form-check-label" for="radioFemale">Female</label>
+                    </div>
+                </div>
+                <div class="col-auto">
+                	<input type="text" class="form-control sort-order" name="sort_order[]" value="1" style="width: 100px">
+                </div>
+                <div class="col-auto">
+                    <button type="button" class="btn btn-danger remove-row"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+        </form>
+
+        <button id="add-row" class="btn btn-primary">Add Row</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="jquery-form-row-repeater.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#employees').formRowRepeater({
+		    templateRow: '.template-row',
+		    addRowButton: '#add-row',
+		    sortableContainer: '#employees',
+		    rowClass: '.form-row',
+		    handleClass: '.handle',
+		    removeButtonClass: '.remove-row',
+		    sortOrderClass: '.sort-order'
+	     });
+        });
+    </script>
+</body>
+</html>
+
