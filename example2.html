@@ -1,159 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Repeatable Form Row with Drag-and-Drop Sorting</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
     <style>
-        /* Custom styles specific to the form rows */
-        .form-row { 
-            margin-bottom: 10px; 
-            padding: 10px; /* Add padding for better spacing */
-            background-color: #f8f9fa; /* Light background color */
-            border: 1px solid #dee2e6; /* Border color */
-            border-radius: .25rem; /* Rounded corners */
-        }
+      /* Custom styles specific to the form rows */
+      .form-row {
+        margin-bottom: 10px;
+        padding: 10px;
+        /* Add padding for better spacing */
+        background-color: #f8f9fa;
+        /* Light background color */
+        border: 1px solid #dee2e6;
+        /* Border color */
+        border-radius: .25rem;
+        /* Rounded corners */
+      }
 
-        .form-row input,
-        .form-row select { 
-            margin-right: 10px; 
-        }
+      .form-row input,
+      .form-row select {
+        margin-right: 10px;
+      }
 
-        .product-option-handle, .product-option-value-handle { 
-            cursor: move; 
-            margin-right: 10px; 
-        }
+      .product-option-handle,
+      .product-option-value-handle {
+        cursor: move;
+        margin-right: 10px;
+      }
     </style>
-</head>
-<body>
-  <div class="container mt-4">
-    <h1 class="mb-4">Product Options</h1>
-    <form id="product-options">
-      <!-- Template row with Bootstrap classes -->
-      <div id="product-options-rows">
-      		<div class="mb-3 row required product-option-template product-option-row">
-			<div class="col-md-1 ">
-			  <span class="product-option-handle">
-			    <i class="fas fa-grip-vertical"></i>
-			  </span>
-			</div>
-			<div class="col-md-8">
-			  <div class="row">
-			    <input type="text" name="options[1][name]" maxlength="255" class="form-control option-name">
-			  </div>
-			  <div class="row product-option-values">
-			    <table class="table table-bordered table-striped mt-2 ">
-			      <thead>
-				<tr>
-				  <th width="5%">&nbsp;</th>
-				  <th width="30%">Name</th>
-				  <th width="10%">Price</th>
-				  <th width="10%">Prefix</th>
-				  <th width="10%">Sort Order</th>
-				  <th width="5%">Hidden</th>
-				  <th width="5%">Default</th>
-				  <th width="5%">&nbsp;</th>
-				</tr>
-			      </thead>
-			      <tbody class="product-options-value-rows" >
-				<tr class="product-option-value-row product-option-value-template">
-				  <td>
-				    <span class="product-option-value-handle">
-				      <i class="fas fa-grip-vertical"></i>
-				    </span>
-				  </td>
-				  <td>
-				    <input type="text" name="options[1][id][1][name]" class="form-control product-option-value-name" data-rule-required="true">
-				  </td>
-				  <td>
-				    <input type="text" name="options[1][id][1][price]" value="0.00" class="form-control product-option-value-price" data-rule-required="true" data-rule-number="true">
-				  </td>
-				  <td>
-				    <select name="options[1][id][1][price_prefix]" class="form-select product-option-value-price-prefix">
-				      <option value="+" selected>+</option>
-				      <option value="-">-</option>
-				    </select>
-				  </td>
-				  <td>
-				    <input type="text" name="options[1][id][1][sort_order]" value="1" class="form-control product-option-value-sort-order" data-rule-required="true" data-rule-number="true">
-				  </td>
-				  <td>
-				    <input type="checkbox" name="options[1][id][1][hidden]" value="YES" class="form-check-input product-option-value-hidden">
-				  </td>
-				  <td>
-				    <input type="radio" name="options[1][id][1][default]" value="YES" class="form-check-input product-option-value-default" checked>
-				  </td>
-				  <td>
-				    <button type="button" class="btn btn-danger product-option-value-remove">
-				      <i class="fa-solid fa-xmark"></i>
-				    </button>
-				  </td>
-				</tr>
-			      </tbody>
-			    </table>
-			    
-			    <button class="btn btn-primary product-option-value-add">Add Option Value</button>
-			  </div>
-			  
-			</div>
-			<div class="col-md-1">
-			  <input type="text" name="options[1][sort_order]" value="0" class="form-control product-option-sort-order" data-rule-required="true" data-rule-number="true">
-			</div>
-			<div class="col-md-1">
-			  <input type="checkbox" name="options[1][hidden]" value="YES" class="form-check-input option-hidden">
-			</div>
-			<div class="col-md-1">
-			  <button type="button" class="btn btn-danger product-option-remove">
-			    <i class="fa-solid fa-xmark"></i>
-			  </button>
-			</div>
-		      </div>
-      </div>
-      <button id="product-option-add" class="btn btn-primary">Add Option</button>
-    </form>
-    
-  </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-  <script src="jquery-form-row-repeater.js"></script>
-  <script>
-    $(document).ready(function() {
-      $('#product-options').formRowRepeater({
-        templateRow: '.product-option-template',
-        addRowButton: '#product-option-add',
-        sortableContainer: '#product-options-rows',
-        rowClass: '.product-option-row',
-        handleClass: '.product-option-handle',
-        removeButtonClass: '.product-option-remove',
-        sortOrderClass: '.product-option-sort-order',
-        afterAddedRow: function(row) {
-        	console.log('callback afterAddedRow');
-        	$(row).find('.product-option-values').formRowRepeater({
-			templateRow: '.product-option-value-template',
-			addRowButton: '.product-option-value-add',
-			sortableContainer: '.product-options-value-rows',
-			rowClass: '.product-option-value-row',
-			handleClass: '.product-option-value-handle',
-			removeButtonClass: '.product-option-value-remove',
-			sortOrderClass: '.product-option-value-sort-order'
-	       });
-        }
+  </head>
+  <body>
+    <div class="container mt-4">
+      <h1 class="mb-4">Product Options</h1>
+      <form id="product-options">
+        <!-- Template row with Bootstrap classes -->
+        <div id="product-options-rows">
+          <div class="mb-3 row required product-option-template product-option-row">
+            <div class="col-md-1 ">
+              <span class="product-option-handle">
+                <i class="fas fa-grip-vertical"></i>
+              </span>
+            </div>
+            <div class="col-md-8">
+              <div class="row">
+                <input type="text" name="options[1][name]" maxlength="255" class="form-control option-name">
+              </div>
+              <div class="row product-option-values">
+                <table class="table table-bordered table-striped mt-2 ">
+                  <thead>
+                    <tr>
+                      <th width="5%">&nbsp;</th>
+                      <th width="30%">Name</th>
+                      <th width="10%">Price</th>
+                      <th width="10%">Prefix</th>
+                      <th width="10%">Sort Order</th>
+                      <th width="5%">Hidden</th>
+                      <th width="5%">Default</th>
+                      <th width="5%">&nbsp;</th>
+                    </tr>
+                  </thead>
+                  <tbody class="product-options-value-rows">
+                    <tr class="product-option-value-row product-option-value-template">
+                      <td>
+                        <span class="product-option-value-handle">
+                          <i class="fas fa-grip-vertical"></i>
+                        </span>
+                      </td>
+                      <td>
+                        <input type="text" name="options[1][id][1][name]" class="form-control product-option-value-name" data-rule-required="true">
+                      </td>
+                      <td>
+                        <input type="text" name="options[1][id][1][price]" value="0.00" class="form-control product-option-value-price" data-rule-required="true" data-rule-number="true">
+                      </td>
+                      <td>
+                        <select name="options[1][id][1][price_prefix]" class="form-select product-option-value-price-prefix">
+                          <option value="+" selected>+</option>
+                          <option value="-">-</option>
+                        </select>
+                      </td>
+                      <td>
+                        <input type="text" name="options[1][id][1][sort_order]" value="1" class="form-control product-option-value-sort-order" data-rule-required="true" data-rule-number="true">
+                      </td>
+                      <td>
+                        <input type="checkbox" name="options[1][id][1][hidden]" value="YES" class="form-check-input product-option-value-hidden">
+                      </td>
+                      <td>
+                        <input type="radio" name="options[1][id][1][default]" value="YES" class="form-check-input product-option-value-default" checked>
+                      </td>
+                      <td>
+                        <button type="button" class="btn btn-danger product-option-value-remove">
+                          <i class="fa-solid fa-xmark"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <button class="btn btn-primary product-option-value-add">Add Option Value</button>
+              </div>
+            </div>
+            <div class="col-md-1">
+              <input type="text" name="options[1][sort_order]" value="0" class="form-control product-option-sort-order" data-rule-required="true" data-rule-number="true">
+            </div>
+            <div class="col-md-1">
+              <input type="checkbox" name="options[1][hidden]" value="YES" class="form-check-input option-hidden">
+            </div>
+            <div class="col-md-1">
+              <button type="button" class="btn btn-danger product-option-remove">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <button id="product-option-add" class="btn btn-primary">Add Option</button>
+      </form>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="jquery-form-row-repeater.js"></script>
+    <script>
+      $(document).ready(function() {
+        $('#product-options').formRowRepeater({
+          templateRow: '.product-option-template',
+          addRowButton: '#product-option-add',
+          sortableContainer: '#product-options-rows',
+          rowClass: '.product-option-row',
+          handleClass: '.product-option-handle',
+          removeButtonClass: '.product-option-remove',
+          sortOrderClass: '.product-option-sort-order',
+          afterAddedRow: function(row) {
+            console.log('callback afterAddedRow');
+            $(row).find('.product-option-values').formRowRepeater({
+              templateRow: '.product-option-value-template',
+              addRowButton: '.product-option-value-add',
+              sortableContainer: '.product-options-value-rows',
+              rowClass: '.product-option-value-row',
+              handleClass: '.product-option-value-handle',
+              removeButtonClass: '.product-option-value-remove',
+              sortOrderClass: '.product-option-value-sort-order'
+            });
+          }
+        });
+        $('.product-option-values').formRowRepeater({
+          templateRow: '.product-option-value-template',
+          addRowButton: '.product-option-value-add',
+          sortableContainer: '.product-options-value-rows',
+          rowClass: '.product-option-value-row',
+          handleClass: '.product-option-value-handle',
+          removeButtonClass: '.product-option-value-remove',
+          sortOrderClass: '.product-option-value-sort-order'
+        });
       });
-      
-      $('.product-option-values').formRowRepeater({
-		templateRow: '.product-option-value-template',
-		addRowButton: '.product-option-value-add',
-		sortableContainer: '.product-options-value-rows',
-		rowClass: '.product-option-value-row',
-		handleClass: '.product-option-value-handle',
-		removeButtonClass: '.product-option-value-remove',
-		sortOrderClass: '.product-option-value-sort-order'
-	});
-    });
-    
-  </script>
-</body>
+    </script>
+  </body>
 </html>
-
