@@ -90,7 +90,9 @@
         <button id="add-row" class="btn btn-primary">Add Row</button>
         <button id="submit" class="btn btn-primary">Submit</button>
       </form>
+      
       <div id="result" class="p-3 mt-4 bg-light border"></div>
+      
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -98,21 +100,23 @@
     <script src="jquery.serializeFormToJson.js"></script>
     <script>
       $(document).ready(function() {
-            $('#employees').formRowRepeater({
-              templateRow: '.template-row',
-              addRowButton: '#add-row',
-              sortableContainer: '#form-rows',
-              rowClass: '.form-row',
-              handleClass: '.handle',
-              removeButtonClass: '.remove-row',
-              sortOrderClass: '.sort-order'
-            });
-            $('#employees').on('submit', function(event) {
-                event.preventDefault();
-                const beautifiedJson = $(this).serializeFormToJson();
-                $('#result').html(' < pre > ' + beautifiedJson + ' < /pre>');
-                });
-            });
+
+		$('#employees').formRowRepeater({
+			templateRow: '.template-row',
+			addRowButton: '#add-row',
+			sortableContainer: '#form-rows',
+			rowClass: '.form-row',
+			handleClass: '.handle',
+			removeButtonClass: '.remove-row',
+			sortOrderClass: '.sort-order'
+		});
+
+		$('#employees').on('submit', function(event) {
+			event.preventDefault();
+			const beautifiedJson = $(this).serializeFormToJson();
+			$('#result').html(' <pre> ' + beautifiedJson + ' </pre>');
+		});
+	});
     </script>
   </body>
 </html>

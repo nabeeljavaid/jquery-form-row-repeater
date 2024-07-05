@@ -46,7 +46,7 @@
             </div>
             <div class="col-md-8">
               <div class="row">
-                <input type="text" name="options[1][name]" maxlength="255" class="form-control option-name">
+                <input type="text" name="options[{n}][name]" maxlength="255" class="form-control option-name">
               </div>
               <div class="row product-option-values">
                 <table class="table table-bordered table-striped mt-2 ">
@@ -70,25 +70,25 @@
                         </span>
                       </td>
                       <td>
-                        <input type="text" name="options[1][id][1][name]" class="form-control product-option-value-name" data-rule-required="true">
+                        <input type="text" name="options[{n}][values][{x}][name]" class="form-control product-option-value-name" data-rule-required="true">
                       </td>
                       <td>
-                        <input type="text" name="options[1][id][1][price]" value="0.00" class="form-control product-option-value-price" data-rule-required="true" data-rule-number="true">
+                        <input type="text" name="options[{n}][values][{x}][price]" value="0.00" class="form-control product-option-value-price" data-rule-required="true" data-rule-number="true">
                       </td>
                       <td>
-                        <select name="options[1][id][1][price_prefix]" class="form-select product-option-value-price-prefix">
+                        <select name="options[{n}][values][{x}][price_prefix]" class="form-select product-option-value-price-prefix">
                           <option value="+" selected>+</option>
                           <option value="-">-</option>
                         </select>
                       </td>
                       <td>
-                        <input type="text" name="options[1][id][1][sort_order]" value="1" class="form-control product-option-value-sort-order" data-rule-required="true" data-rule-number="true">
+                        <input type="text" name="options[{n}][values][{x}][sort_order]" value="1" class="form-control product-option-value-sort-order" data-rule-required="true" data-rule-number="true">
                       </td>
                       <td>
-                        <input type="checkbox" name="options[1][id][1][hidden]" value="YES" class="form-check-input product-option-value-hidden">
+                        <input type="checkbox" name="options[{n}][values][{x}][hidden]" value="YES" class="form-check-input product-option-value-hidden">
                       </td>
                       <td>
-                        <input type="radio" name="options[1][id][1][default]" value="YES" class="form-check-input product-option-value-default" checked>
+                        <input type="radio" name="options[{n}][values][{x}][default]" value="YES" class="form-check-input product-option-value-default" checked>
                       </td>
                       <td>
                         <button type="button" class="btn btn-danger product-option-value-remove">
@@ -102,10 +102,10 @@
               </div>
             </div>
             <div class="col-md-1">
-              <input type="text" name="options[1][sort_order]" value="0" class="form-control product-option-sort-order" data-rule-required="true" data-rule-number="true">
+              <input type="text" name="options[{n}][sort_order]" value="0" class="form-control product-option-sort-order" data-rule-required="true" data-rule-number="true">
             </div>
             <div class="col-md-1">
-              <input type="checkbox" name="options[1][hidden]" value="YES" class="form-check-input option-hidden">
+              <input type="checkbox" name="options[{n}][hidden]" value="YES" class="form-check-input option-hidden">
             </div>
             <div class="col-md-1">
               <button type="button" class="btn btn-danger product-option-remove">
@@ -115,7 +115,11 @@
           </div>
         </div>
         <button id="product-option-add" class="btn btn-primary">Add Option</button>
+        <button id="submit" class="btn btn-primary">Submit</button>
       </form>
+      
+      <div id="result" class="p-3 mt-4 bg-light border"></div>
+      
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -123,37 +127,36 @@
     <script src="jquery.serializeFormToJson.js"></script>
     <script>
       $(document).ready(function() {
-        $('#product-options').formRowRepeater({
-          templateRow: '.product-option-template',
-          addRowButton: '#product-option-add',
-          sortableContainer: '#product-options-rows',
-          rowClass: '.product-option-row',
-          handleClass: '.product-option-handle',
-          removeButtonClass: '.product-option-remove',
-          sortOrderClass: '.product-option-sort-order',
-          afterAddedRow: function(row) {
-            console.log('callback afterAddedRow');
-            $(row).find('.product-option-values').formRowRepeater({
-              templateRow: '.product-option-value-template',
-              addRowButton: '.product-option-value-add',
-              sortableContainer: '.product-options-value-rows',
-              rowClass: '.product-option-value-row',
-              handleClass: '.product-option-value-handle',
-              removeButtonClass: '.product-option-value-remove',
-              sortOrderClass: '.product-option-value-sort-order'
-            });
-          }
-        });
-        $('.product-option-values').formRowRepeater({
-          templateRow: '.product-option-value-template',
-          addRowButton: '.product-option-value-add',
-          sortableContainer: '.product-options-value-rows',
-          rowClass: '.product-option-value-row',
-          handleClass: '.product-option-value-handle',
-          removeButtonClass: '.product-option-value-remove',
-          sortOrderClass: '.product-option-value-sort-order'
-        });
-      });
+		$('#product-options').formRowRepeater({
+			templateRow: '.product-option-template',
+			addRowButton: '#product-option-add',
+			sortableContainer: '#product-options-rows',
+			rowClass: '.product-option-row',
+			handleClass: '.product-option-handle',
+			removeButtonClass: '.product-option-remove',
+			sortOrderClass: '.product-option-sort-order',
+			rowCounterPlaceholder: '{n}',
+			afterAddedRow: function(rowId) {
+				console.log('callback afterAddedRow [data-row-id="' + rowId + '"]');
+				/*$('[data-row-id="' + rowId + '"]').formRowRepeater({
+					templateRow: '.product-option-value-template',
+					addRowButton: '.product-option-value-add',
+					sortableContainer: '.product-options-value-rows',
+					rowClass: '.product-option-value-row',
+					handleClass: '.product-option-value-handle',
+					removeButtonClass: '.product-option-value-remove',
+					sortOrderClass: '.product-option-value-sort-order',
+					rowCounterPlaceholder: '{x}',
+				});*/
+			}
+		});
+		
+		$('#product-options').on('submit', function(event) {
+			event.preventDefault();
+			const beautifiedJson = $(this).serializeFormToJson();
+			$('#result').html(' <pre> ' + beautifiedJson + ' </pre>');
+		});
+	});
     </script>
   </body>
 </html>
