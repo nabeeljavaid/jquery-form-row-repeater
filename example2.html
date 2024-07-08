@@ -139,9 +139,8 @@
 			removeButtonClass: '.product-option-remove',
 			sortOrderClass: '.product-option-sort-order',
 			level: 0,
-			afterAddedRow: function(rowId) {
-				console.log('callback afterAddedRow [data-row-id="' + rowId + '"]');
-				$('[data-row-id="' + rowId + '"]').formRowRepeater({
+			afterAddedRow: function(row) {
+				row.formRowRepeater({
 					templateRow: '.product-option-value-template',
 					addRowButton: '.product-option-value-add',
 					sortableContainer: '.product-options-value-rows',

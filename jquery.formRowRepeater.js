@@ -55,18 +55,10 @@
 			$row.find('input[type="checkbox"], input[type="radio"]').prop('checked', false);
 		}
 
-		function generateUUID() {
-			return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-				var r = Math.random() * 16 | 0,
-					v = c === 'x' ? r : (r & 0x3 | 0x8);
-				return v.toString(16);
-			});
-		}
-
 		// Add a new row
 		this.addRow = function() {
 
-			const $rowId = generateUUID();
+			const $rowId = Date.now();
 			let $newRow = $template.clone();
 			$newRow.attr('data-row-id', $rowId); // Set UUID attribute
 
@@ -94,7 +86,7 @@
 
 			// Call the afterAddedRow callback if provided
 			if (typeof settings.afterAddedRow === 'function') {
-				settings.afterAddedRow($rowId);
+				settings.afterAddedRow($newRow);
 			}
 
 		};
