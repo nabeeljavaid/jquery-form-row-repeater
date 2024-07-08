@@ -1,22 +1,23 @@
 /**
  * jQuery Form Row Repeater Plugin
- * Version: 1.0
+ * Version: 2.0
  * 
  * A jQuery plugin to handle dynamic form row repetition with sorting functionality.
  * Allows adding, removing, and sorting form rows based on a template.
  * 
  * @author Nabeel Javaid <nabeeljavaid.nmj@gmail.com>
- * @version 1.0
+ * @version 2.0
  * 
  * @param {Object} options - Plugin options for customization.
- *   @param {string} [options.templateRow='.template-row'] - Selector for the template row.
- *   @param {string} [options.addRowButton='#add-row'] - Selector for the add row button.
- *   @param {string} [options.sortableContainer] - Selector for the sortable container.
- *   @param {string} [options.rowClass='.form-row'] - Class for each form row.
- *   @param {string} [options.handleClass='.handle'] - Class for the handle of sortable rows.
- *   @param {string} [options.removeButtonClass='.remove-row'] - Class for the remove row button.
- *   @param {string} [options.sortOrderClass='.sort-order'] - Class for sorting order input field.
- *   @param {function} [options.afterAddedRow=null] - Callback function after adding a row.
+ * @param {string} [options.templateRow='.template-row'] - Selector for the template row.
+ * @param {string} [options.addRowButton='#add-row'] - Selector for the add row button.
+ * @param {string} [options.sortableContainer] - Selector for the sortable container.
+ * @param {string} [options.rowClass='.form-row'] - Class for each form row.
+ * @param {string} [options.handleClass='.handle'] - Class for the handle of sortable rows.
+ * @param {string} [options.removeButtonClass='.remove-row'] - Class for the remove row button.
+ * @param {string} [options.sortOrderClass='.sort-order'] - Class for sorting order input field.
+ * @param {number} [options.level=0] - Nested level to replace `[number]` in field names.
+ * @param {function} [options.afterAddedRow=null] - Callback function after adding a row.
  */
 
 (function($) {
@@ -31,16 +32,14 @@
 			handleClass: '.handle',
 			removeButtonClass: '.remove-row',
 			sortOrderClass: '.sort-order',
-			rowCounterPlaceholder: '{n}',
+			level: 0,
 			afterAddedRow: null // Callback function
 		}, options);
 
 		let $template = null;
-		let $rowCount = 0;
 
 		// Function to update sort order
 		this.updateSortOrder = function() {
-			console.log('sort ordering....');
 			$(settings.sortableContainer, this).find(settings.rowClass).each(function(index) {
 				$(this).find(settings.sortOrderClass).val(index + 1);
 			});
@@ -48,36 +47,46 @@
 
 		// Clear values of a form row
 		function clearRowValues($row) {
-			console.log('clearing form....');
 			$row.find('input[type="text"]').val('');
-			$row.find('select').val('');
+			$row.find('input[type="hidden"]').val('');
+			$row.find('select').each(function() {
+				$(this).val($(this).find('option:first').val());
+			});
 			$row.find('input[type="checkbox"], input[type="radio"]').prop('checked', false);
 		}
-		
+
 		function generateUUID() {
-		  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-		    var r = Math.random() * 16 | 0,
-			v = c === 'x' ? r : (r & 0x3 | 0x8);
-		    return v.toString(16);
-		  });
+			return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+				var r = Math.random() * 16 | 0,
+					v = c === 'x' ? r : (r & 0x3 | 0x8);
+				return v.toString(16);
+			});
 		}
-		
+
 		// Add a new row
-		this.addRow = function($rowCounter) {
-			console.log('adding row....');
-			
-			console.log('rowCounter:' + $rowCounter);
+		this.addRow = function() {
+
 			const $rowId = generateUUID();
 			let $newRow = $template.clone();
 			$newRow.attr('data-row-id', $rowId); // Set UUID attribute
-			
+
+			const rowCount = $(settings.sortableContainer, this).children(settings.rowClass).length;
+			const level = settings.level;
+
 			$newRow.find('input, select').each(function() {
-				const name = $(this).attr('name').replace(settings.rowCounterPlaceholder, $rowCounter);
+				let name = $(this).attr('name');
+
+				let count = 0;
+				name = name.replace(/\[\d+\]/g, function(match) {
+					count++;
+					return count === level + 1 ? `[${rowCount}]` : match;
+				});
+
 				$(this).attr('name', name);
 			});
 
 			clearRowValues($newRow); // Clear input values
-			const rowCount = $(settings.sortableContainer, this).children(settings.rowClass).length;
+
 			$newRow.find(settings.sortOrderClass).val(rowCount + 1);
 			$(settings.sortableContainer, this).append($newRow);
 
@@ -104,30 +113,22 @@
 
 		// Initialize the plugin
 		this.init = function() {
-			console.log('Initialize the plugin');
+			console.log('Initialized the plugin');
 
-			$template = $(settings.templateRow).first().clone();
-			
-			
-			// Remove the original template row from DOM
-			$(settings.templateRow, this).first().remove();
-
-			// Append a first row on initialization
-			this.addRow(0);
+			$template = $(settings.templateRow, this).first().clone();
 
 			this.makeSortable();
 
 			// Add row event handler
 			$(settings.addRowButton, this).on('click', (event) => {
 				event.preventDefault();
-				$rowCount++;
-				this.addRow($rowCount);
+				this.addRow();
 				this.makeSortable();
 			});
 
 			// Remove row event handler
 			$(settings.sortableContainer, this).on('click', settings.removeButtonClass, function() {
-				console.log('removing row....');
+
 				$(this).closest(settings.rowClass).remove();
 			});
 

@@ -39,6 +39,7 @@
         <!-- Template row with Bootstrap classes -->
         <div id="product-options-rows">
           <div class="mb-3 row required product-option-template product-option-row">
+          
             <div class="col-md-1 ">
               <span class="product-option-handle">
                 <i class="fas fa-grip-vertical"></i>
@@ -46,7 +47,8 @@
             </div>
             <div class="col-md-8">
               <div class="row">
-                <input type="text" name="options[{n}][name]" maxlength="255" class="form-control option-name">
+                <input type="hidden" name="options[0][id]" value="1">
+                <input type="text" name="options[0][name]" maxlength="255" class="form-control option-name">
               </div>
               <div class="row product-option-values">
                 <table class="table table-bordered table-striped mt-2 ">
@@ -70,25 +72,26 @@
                         </span>
                       </td>
                       <td>
-                        <input type="text" name="options[{n}][values][{x}][name]" class="form-control product-option-value-name" data-rule-required="true">
+                        <input type="hidden" name="options[0][values][0][id]" value="1">
+                        <input type="text" name="options[0][values][0][name]" class="form-control product-option-value-name" data-rule-required="true">
                       </td>
                       <td>
-                        <input type="text" name="options[{n}][values][{x}][price]" value="0.00" class="form-control product-option-value-price" data-rule-required="true" data-rule-number="true">
+                        <input type="text" name="options[0][values][0][price]" value="0.00" class="form-control product-option-value-price" data-rule-required="true" data-rule-number="true">
                       </td>
                       <td>
-                        <select name="options[{n}][values][{x}][price_prefix]" class="form-select product-option-value-price-prefix">
+                        <select name="options[0][values][0][price_prefix]" class="form-select product-option-value-price-prefix">
                           <option value="+" selected>+</option>
                           <option value="-">-</option>
                         </select>
                       </td>
                       <td>
-                        <input type="text" name="options[{n}][values][{x}][sort_order]" value="1" class="form-control product-option-value-sort-order" data-rule-required="true" data-rule-number="true">
+                        <input type="text" name="options[0][values][0][sort_order]" value="1" class="form-control product-option-value-sort-order" data-rule-required="true" data-rule-number="true">
                       </td>
                       <td>
-                        <input type="checkbox" name="options[{n}][values][{x}][hidden]" value="YES" class="form-check-input product-option-value-hidden">
+                        <input type="checkbox" name="options[0][values][0][hidden]" value="YES" class="form-check-input product-option-value-hidden">
                       </td>
                       <td>
-                        <input type="radio" name="options[{n}][values][{x}][default]" value="YES" class="form-check-input product-option-value-default" checked>
+                        <input type="radio" name="options[0][values][0][default]" value="YES" class="form-check-input product-option-value-default" checked>
                       </td>
                       <td>
                         <button type="button" class="btn btn-danger product-option-value-remove">
@@ -102,10 +105,10 @@
               </div>
             </div>
             <div class="col-md-1">
-              <input type="text" name="options[{n}][sort_order]" value="0" class="form-control product-option-sort-order" data-rule-required="true" data-rule-number="true">
+              <input type="text" name="options[0][sort_order]" value="0" class="form-control product-option-sort-order" data-rule-required="true" data-rule-number="true">
             </div>
             <div class="col-md-1">
-              <input type="checkbox" name="options[{n}][hidden]" value="YES" class="form-check-input option-hidden">
+              <input type="checkbox" name="options[0][hidden]" value="YES" class="form-check-input option-hidden">
             </div>
             <div class="col-md-1">
               <button type="button" class="btn btn-danger product-option-remove">
@@ -135,10 +138,10 @@
 			handleClass: '.product-option-handle',
 			removeButtonClass: '.product-option-remove',
 			sortOrderClass: '.product-option-sort-order',
-			rowCounterPlaceholder: '{n}',
+			level: 0,
 			afterAddedRow: function(rowId) {
 				console.log('callback afterAddedRow [data-row-id="' + rowId + '"]');
-				/*$('[data-row-id="' + rowId + '"]').formRowRepeater({
+				$('[data-row-id="' + rowId + '"]').formRowRepeater({
 					templateRow: '.product-option-value-template',
 					addRowButton: '.product-option-value-add',
 					sortableContainer: '.product-options-value-rows',
@@ -146,9 +149,20 @@
 					handleClass: '.product-option-value-handle',
 					removeButtonClass: '.product-option-value-remove',
 					sortOrderClass: '.product-option-value-sort-order',
-					rowCounterPlaceholder: '{x}',
-				});*/
+					level: 1
+				});
 			}
+		});
+		
+		$('#product-options .product-option-values:first').formRowRepeater({
+			templateRow: '.product-option-value-template',
+			addRowButton: '.product-option-value-add',
+			sortableContainer: '.product-options-value-rows',
+			rowClass: '.product-option-value-row',
+			handleClass: '.product-option-value-handle',
+			removeButtonClass: '.product-option-value-remove',
+			sortOrderClass: '.product-option-value-sort-order',
+			level: 1
 		});
 		
 		$('#product-options').on('submit', function(event) {
